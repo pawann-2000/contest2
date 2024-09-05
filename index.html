@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee Management</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #1e1e1e;
+            color: #ffffff;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        h2 {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+        .form-group {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+        input {
+            flex: 1;
+            padding: 8px;
+            background-color: #2c2c2c;
+            border: 1px solid #444;
+            color: #fff;
+        }
+        button {
+            padding: 8px 16px;
+            background-color: #ffffff;
+            color: black;
+            border: none;
+            cursor: pointer;
+        }
+        .message {
+            margin-top: 10px;
+            padding: 10px;
+        }
+        .error {
+            color: #ff3333;
+        }
+        .success {
+            color: #32cd32;
+        }
+        .employee-list {
+            margin-top: 20px;
+        }
+        .employee-item {
+            background-color: #2c2c2c;
+            padding: 16px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-radius: 5px;
+        }
+        .delete-btn {
+            background-color: #ffffff;
+            color: black;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>New Employees</h2>
+        <form id="employeeForm">
+            <div class="form-group">
+                <input type="text" id="name" placeholder="Enter Name">
+                <input type="text" id="profession" placeholder="Enter Profession">
+                <input type="number" id="age" placeholder="Enter Age">
+            </div>
+            <button type="submit">Add User</button>
+        </form>
+        <div id="message" class="message"></div>
+        <h2>Added Employees</h2>
+        <div id="employeeCount"></div>
+        <div id="employeeList" class="employee-list"></div>
+    </div>
+
+    <script>
+        let employees = [];
+        let nextId = 1;
+
+        const form = document.getElementById('employeeForm');
+        const messageDiv = document.getElementById('message');
+        const employeeListDiv = document.getElementById('employeeList');
+        const employeeCountDiv = document.getElementById('employeeCount');
+
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const name = document.getElementById('name').value.trim();
+            const profession = document.getElementById('profession').value.trim();
+            const age = document.getElementById('age').value.trim();
+
+            if (!name || !profession || !age) {
+                showMessage('Error : Please Make sure All the fields are filled before adding in an employee !', 'error');
+                return;
+            }
+
+            const employee = {
+                id: nextId++,
+                name: name,
+                profession: profession,
+                age: parseInt(age)
+            };
+
+            employees.push(employee);
+            showMessage('Success : Employee Added!', 'success');
+            updateEmployeeList();
+            form.reset();
+        });
+
+        function showMessage(text, type) {
+            messageDiv.textContent = text;
+            messageDiv.className = `message ${type}`;
+        }
+
+        function updateEmployeeList() {
+            employeeListDiv.innerHTML = '';
+            employeeCountDiv.textContent = `You have ${employees.length} Employee${employees.length !== 1 ? 's' : ''}`;
+            
+            if (employees.length === 0) {
+                return;
+            }
+
+            employees.forEach(emp => {
+                const empDiv = document.createElement('div');
+                empDiv.className = 'employee-item';
+                empDiv.innerHTML = `
+                    <div>${emp.id}. Name: ${emp.name} &nbsp;&nbsp; Profession: ${emp.profession} &nbsp;&nbsp; Age: ${emp.age}</div>
+                    <button onclick="deleteEmployee(${emp.id})" class="delete-btn">Delete User</button>
+                `;
+                employeeListDiv.appendChild(empDiv);
+            });
+        }
+
+        function deleteEmployee(id) {
+            employees = employees.filter(emp => emp.id !== id);
+            updateEmployeeList();
+        }
+
+        // Initial update
+        updateEmployeeList();
+    </script>
+</body>
+</html>
